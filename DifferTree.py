@@ -25,6 +25,37 @@ class DifferTree:
         self.PrintTree(node.left, separator, "L")
         self.PrintTree(node.right, separator, "R")
 
+    # region Differ functions
+    def Differ(self, node):
+        if node is None:
+            return
+
+        resultNode = {
+            '+': self.DiffSum(node),
+            '-': self.DiffSub(node),
+            '*': self.DiffProd(node),
+            '/': self.DiffDiv(node),
+            'x': TreeNode('1')
+        }
+        return resultNode
+
+    def DiffSum(self, node):
+        pass
+
+    def DiffSub(self, node):
+        pass
+
+    def DiffProd(self, node):
+        pass
+
+    def DiffDiv(self, node):
+        pass
+
+    def SimpleTree(self, node):
+        pass
+
+    # endregion
+
     def NodeToInfixForm(self, rootNode):
         self.resString = None
         self.arrList = []
