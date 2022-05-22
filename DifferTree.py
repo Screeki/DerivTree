@@ -1,12 +1,12 @@
-from Node import Node as TreeNode
+from Node import Node
 
 
 class DifferTree:
-    RootNode = TreeNode
+    RootNode = None
     pos = 0
 
     def BuildTree(self, s):
-        n = TreeNode(s[self.pos])
+        n = Node(s[self.pos])
         if self.IsOperation(n.data):
             self.pos += 1
             n.left = self.BuildTree(s)
@@ -29,30 +29,110 @@ class DifferTree:
     def Differ(self, node):
         if node is None:
             return
-
-        resultNode = {
-            '+': self.DiffSum(node),
-            '-': self.DiffSub(node),
-            '*': self.DiffProd(node),
-            '/': self.DiffDiv(node),
-            'x': TreeNode('1')
-        }
-        return resultNode
+        result_node = None
+        if node.data == '+':
+            result_node = self.DiffSum(node)
+        elif node.data == '-':
+            result_node = self.DiffSub(node)
+        elif node.data == '*':
+            result_node = self.DiffProd(node)
+        elif node.data == '/':
+            result_node = self.DiffDiv(node)
+        elif node.data == 'x':
+            result_node = Node('1')
+        return result_node
 
     def DiffSum(self, node):
-        pass
+        if node is None:
+            return None
+
+        resultNode = Node('+')
+        resultNode.left = self.Differ(node.left)
+        resultNode.right = self.Differ(node.right)
+        return resultNode
 
     def DiffSub(self, node):
-        pass
+        if node is None:
+            return None
+        resultNode = Node('-')
+        resultNode.left = self.Differ(node.left)
+        resultNode.right = self.Differ(node.right)
+        return resultNode
 
+    # D(u*v) = D(u)*v+u*D(v)
     def DiffProd(self, node):
-        pass
+        if node is None:
+            return None
+        leftNode = Node('*')
+        rightNode = Node('*')
+        resultNode = Node('+')
 
+        leftNode.left = self.Differ(node.left)
+        leftNode.right = node.right
+        resultNode.left = leftNode
+
+        rightNode.left = node.left
+        rightNode.right = self.Differ(node.right)
+        resultNode.right = rightNode
+        return resultNode
+
+    # D(u/v) = D(u)/v-(u*D(v))/(v*v)
     def DiffDiv(self, node):
-        pass
+        if node is None:
+            return None
+        resultNode = Node('-')
+        leftNode = Node('/')
+        rightNode = Node('/')
+        leftOfRightNode = Node('*')
+        rightOfRightNode = Node('*')
+
+        leftNode.left = self.Differ(node.left)
+        leftNode.right = node.right
+        resultNode.left = leftNode
+
+        leftOfRightNode.left = node.left
+        leftOfRightNode.right = self.Differ(node.right)
+        rightNode.left = leftOfRightNode
+        rightOfRightNode.left = node.right
+        rightOfRightNode.right = node.right
+        rightNode.right = rightOfRightNode
+        resultNode.right = rightNode
+        return resultNode
 
     def SimpleTree(self, node):
-        pass
+        resNode = self.RootNode
+        resNode = self.SimpleNode(resNode)
+        return resNode
+
+    def SimpleNode(self, node):
+        if node is None:
+            return None
+        resultNode = Node(node.data)
+        resultNode.left = self.SimpleNode(node.left)
+        resultNode.right = self.SimpleNode(node.right)
+        if node.data == '+':
+            if node.left.data == '0':
+                resultNode = node.right
+            elif node.right.data == '0':
+                resultNode = node.left
+        elif node.data == '-':
+            if node.right.data == '0':
+                resultNode = node.left
+        elif node.data == '*':
+            if node.left.data == '0':
+                resultNode = node.left
+            elif node.right.data == '0':
+                resultNode = node.right
+            elif node.left.data == '1':
+                resultNode = node.right
+            elif node.right.data == '1':
+                resultNode = node.left
+        elif node.data == '/':
+            if node.left.data == '0':
+                resultNode = node.left
+            elif node.right.data == '1':
+                resultNode = node.left
+        return resultNode
 
     # endregion
 
