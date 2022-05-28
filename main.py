@@ -11,6 +11,9 @@ def main():
 
     differ_tree.PrintTree(differ_tree.RootNode)
 
+    differ_tree = DifferTree()
+    differ_tree.RootNode = differ_tree.BuildTree(formula)
+
     differ_tree.RootNode = differ_tree.Differ(differ_tree.RootNode)
     differ_tree.PrintTree(differ_tree.RootNode)
 
